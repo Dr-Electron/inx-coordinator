@@ -452,7 +452,11 @@ func sendMessage(message *iotago.Message, msIndex ...milestone.Index) (hornet.Me
 	if err != nil {
 		return nil, err
 	}
-
+	if len(msIndex) > 0 {
+		CorePlugin.LogInfof("Sent milestone message (%d): %s", msIndex[0], iotago.EncodeHex(messageID[:]))
+	} else {
+		CorePlugin.LogInfof("Sent checkpoint message: %s", iotago.EncodeHex(messageID[:]))
+	}
 	msgSolidEventChan := deps.NodeBridge.RegisterMessageSolidEvent(context.Background(), messageID)
 
 	defer func() {
@@ -471,6 +475,12 @@ func sendMessage(message *iotago.Message, msIndex ...milestone.Index) (hornet.Me
 		if err = utils.WaitForChannelClosed(context.Background(), milestoneConfirmedEventChan); err != nil {
 			return nil, err
 		}
+	}
+
+	if len(msIndex) > 0 {
+		CorePlugin.LogInfof("Solid milestone message (%d): %s", msIndex[0], iotago.EncodeHex(messageID[:]))
+	} else {
+		CorePlugin.LogInfof("Solid checkpoint message: %s", iotago.EncodeHex(messageID[:]))
 	}
 
 	return hornet.MessageIDFromArray(messageID), nil

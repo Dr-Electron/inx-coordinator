@@ -2,6 +2,7 @@ package nodebridge
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -311,6 +312,7 @@ func (n *NodeBridge) RegisterMessageSolidEvent(ctx context.Context, messageID io
 	// check if the message is already solid
 	metadata, err := n.MessageMetadata(ctx, messageID)
 	if err == nil {
+		fmt.Printf("Fetched metadata for messageID: %s, solid: %v\n", iotago.EncodeHex(messageID[:]), metadata.Solid)
 		if metadata.Solid {
 			// trigger the sync event, because the message is already solid
 			n.tangleListener.processSolidMessage(metadata)
